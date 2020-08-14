@@ -5,11 +5,32 @@
     <Preloader :data="true"/>
     <div class="wrapper">
       <div class="filters">
-        <div class="filters__col">
-          <Input label="Название" />
+        <div class="search__options">
+          <Input label="" @input-changed='getSearch' />
+          <button disabled:true class="icon" @click='searschbyTitle'>
+            <font-awesome-icon class="icon" icon="search" />
+          </button>  
         </div>
-        <div class="filters__col">
-          <Input />
+        <div >
+          <select class="filters__col" v-model="selectedSubject">
+            <option>Все предметы</option>
+            <option>Алгебра</option>
+            <option>Английский язык</option>
+            <option>Биология</option>
+            <option>География</option>
+            <option>Геометрия</option>
+            <option>Демо-версия</option>
+            <option>Информатика</option>
+            <option>История</option>
+            <option>Литература</option>
+            <option>Математика</option>
+            <option>Обществознание</option>
+            <option>Окружающий мир</option>
+            <option>Робототехника</option>
+            <option>Русский язык</option>
+            <option>Физика</option>
+            <option>Химия</option>
+          </select>
         </div>
       </div>
       <nav class="tabsNav">
@@ -32,7 +53,7 @@
         
       </nav>      
         <div  class="games">          
-          <GameCard v-bind:currentgame="currentgame" v-on:update="getGame($event)"  v-for="(game, index) in  logoFilterToSettings"  :game="game" :key="index"  class="games__item" />   
+          <GameCard v-bind:currentgame="currentgame" v-on:update="getGame($event)"  v-for="(game, index) in  filteredItems"  :game="game" :key="index"  class="games__item" />   
           
         </div>      
     </div>
@@ -59,6 +80,8 @@ export default {
     return {
       header: true,   
       hasBeenCliked: false,
+      selectedSubject: "Все предметы",
+      search: null,
       selected:null,
       currentgame:{
         name:"game"
@@ -83,189 +106,19 @@ export default {
       this.selected.classList.remove('games__item');  
       this.selected.classList.add('games__active'); // подсветить новый td
     },
-    
-    Check() {
-      class DBwork {
-          constructor(FirebaseVariable) {
-            this.db = FirebaseVariable;
-          }
-         Search(collection,condition){
-          return new Promise(resolve => {
-            this.db.firestore().collection(collection).get()
-            .then(querySnapshot => {
-              var array = querySnapshot.docs;
-              var result = array.filter(condition);
-                //var  = temp.filter(x => x.data());
-                //result.forEach(x => console.log(x.data()));
-              resolve(result);
-            });
-          })
-        }
-      }
-     
-      var variable = new DBwork(firebase);
-
- 
-      variable.Search('accounts', x => x.data().name===" Админ - я").then(res =>{
-        res.forEach(x => console.log(x.data()));
-      });
+    getSearch(value) {
+      this.search = value.toLowerCase(); 
+      (this.search.length == 0) ? this.search=null :         
+      //this.search = value.toLowerCase(); 
+      (/[0-9]/.test(this.search)) ?
+      this.search = value.replace(/[^0-9]/g, '')  :      
+      this.search = value.replace(/[^A-Za-zА-Яа-яЁё]/g, "").toLowerCase();
     },
-    SuperCheck() {
-      var storage = firebase.storage();
-      var storageRef = storage.ref();
-      class DBwork {
-          constructor(FirebaseVariable) {
-              this.db = FirebaseVariable;
-          } 
-        UserExistCheck(email) {
-            return new Promise(resolve => {
-                this.db.auth().fetchSignInMethodsForEmail(email).then(r => {
-                    r.length > 0 ? resolve(1) : resolve(-1);
-                });
-            })
-        }
+    searschbyTitle(){
+      console.log(this.search)       
+    },
+    
 
-        Search(collection, condition) {
-            return new Promise(resolve => {
-                this.db.firestore().collection(collection).get()
-                    .then(querySnapshot => {
-                        var array = querySnapshot.docs;
-                        var result = array.filter(condition);
-                        //var  = temp.filter(x => x.data());
-                        //result.forEach(x => console.log(x.data()));
-                        resolve(result);
-
-
-                    });
-            })
-        }
-
-        SetLike(game, user) {
-            return new Promise(resolve => {
-                this.db.firestore().collection('games').doc(game).update({
-                    "likes": firebase.firestore.FieldValue.arrayUnion(user),
-                })
-            })
-        }
-        GetUserID(email) {
-            return new Promise(resolve => {
-                this.Search('accounts', x => x).then(res => {
-                    this.UserExistCheck(email).then(r=>{
-                        if(r===-1){
-                            resolve("");
-                        }
-                        else{
-                            for (var i = 0; i < res.length; i++) {
-                                if (String(res[i].data().name).indexOf(email) !== -1) {
-                                    resolve(res[i].id);
-                                    break;
-                                }
-                            }
-                            resolve("");
-                        }
-                    })
-                });
-            })
-        }
-        //Поиск вопросов
-        //Поиск ответов
-        //Кол-во лайкнувших
-        //Кол-во
-        GetLikesCount(collection, condition) {
-            return new Promise(resolve => {
-                this.Search(collection, condition).then(r => {
-                    var res = r.map(x => x.data().likes.length);
-                    r.forEach(x => console.log(x.data().likes.length));
-                });
-            })
-        }
-
-          //Ищем игры по заданному фильтру(Получаем ссылки на бд и тд)
-        GetGamesInfo(collection, condition) {
-              return new Promise(resolve => {  
-                  this.db.firestore().collection(collection).get()
-                      .then(querySnapshot => {  
-                          var array = querySnapshot.docs;  
-                          var queryresult = array.filter(condition);  
-                          var data = queryresult.map(x => x.data());  
-                          var res = [];  
-                          for(var i=0;i<queryresult.length;i++){
-                              (async function(i,db) {
-                                  setTimeout(function() {
-                                      firebase.firestore().collection(collection).doc(queryresult[i].id).collection("questions").get().then(r=>{
-                                          var temp = r.docs.map(x=>x.data());  
-                                          var dbLocal = new DBwork(db);  
-                                          //парсинг  
-                                          async function parse(dbparse) {  
-                                             
-
- 
-                                            var isLiked = new Promise(resolve5 =>{
-                                                //dbLocal.GetUserID()
-                                                dbLocal.GetUserID('virtu78@yandex.ru').then(r=>{
-                                                    let islike;
-                                                    if(r.length>0){
-                                                        islike = true;
-                                                    }
-                                                    else{
-                                                        islike=false;
-                                                    }
-                                                  //  console.log(data[i-1]);
-                                                    resolve5(islike);
-                                                });
-                                            })
-                                             // console.log(i);  
- 
-
-                                                  
-                                                  
-                                                  data[i].isliked = await isLiked;
-                                                console.log(data[i].isliked);
-                                                console.log(i);
-                                                  
-                                       
-                                          }  
-                                          parse(dbLocal);
-                                          //парсинг  
-                                        //  console.log(data[i].background)  
-                                          res.push({
-                                              "questions":temp,
-                                              "settings":data[i],
-                                          });  
-                                          
-                                          if(i>=queryresult.length-1){
-                                              console.log("resolve");
-                                              resolve(res);
-                                          }  
-                                      })  
-                                  }, 10);
-                              })(i,this.db);    
-                          }  
-                      });  
-              })  
-          }
-        }
-//Получить настройки пользователя по нику
-    // GesUserSettings(username){
-    //     this.db.firestore().collection('accounts').get().then(r =>{
-    //         var array = r.docs;
-    //
-    //         var result = array.filter(x=>x.data().name===username);
-    //         console.log(result.data());
-    //     })
-    // }
-var variable = new DBwork(firebase);
-variable.GetGamesInfo("games", x=>x).then(r=>{
-        //r.forEach(x=>console.log(x.questions.forEach(x=>console.log(x))));
-        //Вывести все
-         console.log(r);
-         //Только вопросы с ответами
-        //r.forEach(x=>console.log(x.questions));
-        //Только настройки(Название игры, фоновая музыка, лого и тд)
-        //r.forEach(x=>console.log(x.settings));
-        
-});
-}
 },
   computed:{
  ...mapState({
@@ -286,10 +139,48 @@ variable.GetGamesInfo("games", x=>x).then(r=>{
     logoFilterToVisible() {
       return this.$store.getters.logoFilterToVisible
     },
+    titles: state =>{
+      return   state.logoFilterToSettings.map(item => item.name);
+    }, 
     logoFilterToSettings: state => {
       return  state.logoFilterToVisible.map(ToSettings => ToSettings.settings);     
     },
-
+    
+    arrUniqueMix() {
+      const copy = []
+      Array.from(this.logoFilterToSettings).forEach((itm,i) => {
+      itm.tagList = this.newfilteredItems[i].tagList
+      copy.push(itm)
+      })
+    return copy       
+    },
+    newfilteredItems() { 
+      let str, heading,      
+      newarr=[]      
+      for (let i=0; i<this.titles.length; i++){
+        str=this.titles[i].replace(/[,.:-]/g, ' ');
+        heading=str.replace(/\s+/g,' ' ) // заменить длинные пробелы одним
+        .replace(/^\s/,'')    // удалить пробелы в начале строки
+        .replace(/\s$/,'');   // удалить пробелы в конце строки
+        let separator = /\s* \s*/;
+        let tagList = heading.split(separator);
+        let obj={tagList};       
+         newarr.push(obj);            
+      }       
+       return newarr       
+      },
+    filteredItems(){         
+      let sbjct;      
+      sbjct = (this.selectedSubject !=='Все предметы') ? 
+          this.logoFilterToToSbjct : 
+            (this.search !== null) ? 
+          this.arrUniqueMix.filter(itm=>itm.tagList.find(p=>p.toLowerCase()=== this.search)) :     
+          this.arrUniqueMix  
+      return sbjct
+    },
+    logoFilterToToSbjct() {      
+      return this.logoFilterToSettings.filter(item => item.subject === this.selectedSubject)     
+    },   
 
   },
   created: function() {    
@@ -307,9 +198,25 @@ variable.GetGamesInfo("games", x=>x).then(r=>{
 .filters {
   display: flex;
   &__col {
-    padding: 15px;
-    width: 50%;
+    padding: 5px;
+    width: 300px;
+    margin:20px;
   }
+}
+.search {
+ // background: #009688;
+  //background-color: rgb(75, 70, 70);
+  box-sizing: border-box;  
+  &__options {    
+    display: flex;
+    align-items: center;
+    //padding: 5px;
+    width: 100%;   
+  }
+}
+.dashboard{
+  position: relative;
+    margin:  2% 0  0 10%;      
 }
 .tabsNav {
   border-bottom: 1px solid #eee;
@@ -322,20 +229,27 @@ variable.GetGamesInfo("games", x=>x).then(r=>{
     min-width: 160px;
     padding: 15px;
     text-transform: uppercase;
-    font-size: 16px;
-    color: gray;
+    font-size: 20px;   
+    font-weight: 400;
+    font-style: normal;
+    text-rendering: optimizeLegibility;    
+    font-family: "-apple-system",BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+    color: #333;
     transition: color 0.3s, border-color 0.3s;
     &:hover {
      // color: #009688;
-       color: #cb3837;
+       color: gray;
     }
     &--active {
       //border-bottom: 2px solid #009688;
      /// color: #009688;
-       border-bottom: 2px solid #cb3837;
-      color: #cb3837;
+       border-bottom: 2px solid #333;
+       color: #333;
     }
   }
+}
+.icon {
+  margin:5px 5px 5px 5px;
 }
 .games {
   box-sizing: border-box;
@@ -344,8 +258,9 @@ variable.GetGamesInfo("games", x=>x).then(r=>{
   padding: 7.5px;
   &__item {     
     box-sizing: border-box;
-    padding: 7.5px;
-    width: 100%;
+    
+    min-width: 16%;
+    
     @media (min-width: 375px) {
       width: 50%;
     }

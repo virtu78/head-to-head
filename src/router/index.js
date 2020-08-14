@@ -18,81 +18,66 @@ export default new Router({
   routes: [
   {
     path: "/",
-    name: "Login",
-    component: Login,
-    props: true
+    name: "Games",
+    component: Games,
+    props: true,
+    
   },
   {
     path: "/games",
     name: "Games",
     component: Games,
-    props: true,
-    meta: {
-      requiresAuth: true
-    }
+    props: true, 
+    
   },
   {
     path: "/settings",
     name: "Settings",
     component: Settings,
-    props: true,
-    meta: {
-      requiresAuth: true
-    }
+    props: true,  
+    
   },
   {
     path: "/all",
     name: "All",
     component: All,
-    props: true,
-    meta: {
-    requiresAuth: true
-     }
+    props: true, 
+    
   },
   {
     path: "/favorites",
     name: "Favorites",
     component: Favorites,
-    props: true,
-    meta: {
-      requiresAuth: true
-    }
+    props: true,  
+    
   },
   {
     path: "/mine",
     name: "Mine",
     component: Mine,
-    props: true,
-    meta: {
-      requiresAuth: true
-      }
+    props: true, 
+    
   },
   {
     path: "/downloaded",
     name: "Downloaded",
     component: Downloaded,
     props: true,
-    meta: {
-    requiresAuth: true
-     }
+    
   },
   {
     path: "/game/ :name",
     name: "Game",
     component: Game,
     props: true,
-    meta: {
-    requiresAuth: true
-     }
+    
      },
      {
       path: "/created",
       name: "Create",
       component: Create,
       props: true,
-      meta: {
-      requiresAuth: true
-      }
+     
         
   },
   {

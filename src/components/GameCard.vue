@@ -1,20 +1,24 @@
 <template>
-  <div id="gm" class="game-card"  @click="gameClicked" >
-    <div class="game-card__preview">
+  <div id="gm"  class="game-card"
+           :class="{'game-card__active': this.gameHasBeenClicked}">
+    <div class="game-card__preview" >
      
      
-      <img  :src='game.logo' class="game-card__image" />
+      <img  :src='game.logo' class="game-card__image" @click="gameClicked"/>
       
       <button class="game-card__save-button">
         <font-awesome-icon icon="save" />
       </button>
     </div>
-    <div class="game-card__info">      
-      
+    <div class="game-card__info" @click="gameClicked" >      
+     <!-- 
       <router-link tag="div" class="game-card__title" :to="{ name : 'Game', params: {name: game.name}}" >
         <span @click="PlayedIncrement">{{game.name}}</span>
       </router-link>
-      <div class="game-card__text" v-html="game.description">}</div>
+      -->
+      <span class="game-card__title" @click="PlayedIncrement">{{game.name}}</span>
+      <div class="game-card__text" v-html="game.description" >}</div>
+    </div>
       <div class="game-card__stat">
         <div class="views-counter">
           <div class="views-counter__icon">
@@ -31,7 +35,7 @@
           </div>
           <div class="favorite-counter__value">{{game.likes.length}}</div>
         </div>
-      </div>
+      
     </div>
   </div>
 </template>
@@ -45,31 +49,36 @@ export default {
   name: "GameCard",
   props: {
     game: Object,
-    likesFilterToSettingsIsLiked: Boolean,  
+    //likesFilterToSettingsIsLiked: Boolean,  
       
  
   },
   data: function () {
     return {
       hasBeenLiked:false, 
-      currentgame:null,
+      gameHasBeenClicked:false,
+      falsegame:{
+        name:"game"
+      },
     }
   },
- methods: {
+ methods: {   
    gameClicked() {  
       let items = document.querySelectorAll('#gm');
       //console.log(items)
         items.forEach(item => {
         this.selected=item;
-        console.log(this.selected)
-        item.addEventListener('click', this.highlight());
-        this.$emit('update', this.game);
+        //console.log(this.selected)
+        item.addEventListener('click', this.showPlayButton());    
         
+       
       });      
     },   
-    highlight() {       
-      this.selected.classList.remove('game-card');  
-      this.selected.classList.add('game-card__active'); // подсветить новый td
+    showPlayButton() {
+      this.gameHasBeenClicked ?   this.$emit('update', this.falsegame) :  this.$emit('update', this.game)  ;
+      this.gameHasBeenClicked = !this.gameHasBeenClicked;
+    //  this.selected.classList.remove('game-card');  
+    //  this.selected.classList.add('game-card__active'); 
     },
      addLike: function()   {
 
@@ -235,7 +244,10 @@ async PlayedInc(game){
 <style lang='scss' scoped>
 .game-card {
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 15px;
+  margin: 1%;
+  border-style:solid;
+  border-color:gray;
   overflow: hidden;
   transition: box-shadow 0.3s;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);  
@@ -246,8 +258,11 @@ async PlayedInc(game){
     }
   }
      &__active {
-
-      background-color:rgb(153, 156, 156);
+        border-radius: 15px;
+        margin: 1%;
+        border-style:solid;
+        border-color:gray;  
+        background-color:aquamarine;
     }
   &__preview {
     position: relative;
@@ -283,7 +298,10 @@ async PlayedInc(game){
     }
   }
   &__info {
-    padding: 15px;
+    padding:0;
+   // background-color:yellow;
+    height: 10.5em;
+    position: relative; 
   }
   &__title {
     height:80px;

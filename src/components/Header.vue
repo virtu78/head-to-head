@@ -1,11 +1,18 @@
 <template>
+<section>
   <div class="header">
     <div class="wrapper">
-      <h1 class="header__title" v-if="hasHeader">Игры</h1>
-
+     
+      <!-- 
+      <p class="eye" style="color:white">
+        <icon-base v-if="hasHeader" width="72" height="34" icon-name="Eye"><icon-eye /></icon-base> 
+      </p>
+      -->
+      <h1 class="header__title" v-if="hasHeader">HEAD-TO-HEAD</h1>
+      
       <button v-show="isButtonEnabled" class="play-button" v-if="hasHeader"  >
         <router-link  style="color:#fff" :to="{ name : 'Game', params: {name: currentgame.name}}" >
-          <font-awesome-icon   icon="play" />Играть
+          <font-awesome-icon   icon="play" />Поехали!
         </router-link>
       </button>
 
@@ -27,16 +34,23 @@
       </div>
     </div>
   </div>
+  </section>
 </template>
 
 <script>
 import firebase from 'firebase';
-
+//import IconBase from './IconBase.vue'
+//import IconEye from './icons/IconEye.vue'
 export default {
   name: "Header",
+  components: {
+   // IconBase,
+    //IconEye,
+  },
   props: {
     hasHeader: Boolean,  
     currentgame: Object,
+    gameHasBeenClicked: Boolean,
     },
   
   data: function () {
@@ -63,8 +77,10 @@ export default {
 <style lang="scss" scoped>
 .header {
  // background: #009688;
- background: #000000;
+  background: #333;
+  height: 48px;
   box-sizing: border-box;
+  
   .wrapper {
     display: flex;
     align-items: center;
@@ -75,11 +91,18 @@ export default {
     min-height: 60px;
     padding: 10px 15px;
   }
+ 
   &__title {
+    //position:relative;
     margin: 0;
-    font-weight: 500;
     font-size: 24px;
+    //left: -270px;
+    //bottom:10px;
+    font-weight: 400;
+    font-style: normal;
+    text-rendering: optimizeLegibility;
     color: #fff;
+    font-family: "-apple-system",BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
   }
   &__options {
     display: flex;

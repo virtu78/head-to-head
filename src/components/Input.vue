@@ -1,7 +1,7 @@
 <template>
   <div>
       <div class="input" :label="label">
-        <input class="input__input" type="text" ref="inputValue" required @input="updateValue()"/>
+         <input class="input__input" type="text" ref="inputValue" required @input="updateValue()"/>
         <span class="input__label">{{ label }}</span>
       </div>
       <div class="error" v-show="error">{{error}}</div>
@@ -9,7 +9,6 @@
 </template>
 
 <script>
-import firebase  from "firebase";
 export default {
   name: "Input",
   props: {
@@ -20,18 +19,14 @@ export default {
     error: {
       type: String,
       required: false
-    }
+    },
+   
   }, 
   methods: {
-    updateValue: function() {
+    updateValue() {
           this.$emit('input-changed', this.$refs.inputValue.value )
-          },
-
-    
-
-    
+          }, 
   }
-
 };
 </script>
 
@@ -39,14 +34,12 @@ export default {
 .input {
   position: relative;
   &__input {
-    font-size: 14px;
+    font-size: 24px;
     width: 100%;
-    height: 20px;
-    line-height: 14px;
-    padding-top: 10px;
-    padding-bottom: 3px;
-    border: none;
-    border-bottom: 1px dotted #b5b5b5;
+    height: 100%;
+    //background-color:#d5d5d5;
+    border-style: solid;
+    //border-bottom: 1px dotted #b5b5b5;
 
     &:focus ~ .input__label,
     &:not(:focus):valid ~ .input__label {

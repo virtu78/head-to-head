@@ -20,7 +20,8 @@ import {
   faArrowCircleRight,
   faTimes,
   faCircle,
-  faArrowRight
+  faArrowRight,
+  faSearch,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import './registerServiceWorker';
@@ -57,7 +58,8 @@ const config = firebase.initializeApp({
   faArrowCircleRight,
   faTimes,
   faCircle,
-  faArrowRight
+  faArrowRight,
+  faSearch,
 });
 
 

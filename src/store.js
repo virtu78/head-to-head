@@ -24,7 +24,7 @@ export const store = new Vuex.Store({
     currentUserId: state => {      
         return  state.user.currentUser.uid;
       },
-      preMedia: state => {      
+    preMedia: state => {      
       return  state.media.questions[0].preMedia;
     },
     postMedia: state => {      
@@ -35,11 +35,10 @@ export const store = new Vuex.Store({
       return  state.likes.filter(likesvisible => likesvisible.settings.visible);
     },
     
-  logoFilterToVisible: state => {
-    return  state.logo.filter(logovisible => logovisible.settings.visible);
+    logoFilterToVisible: state => {
+      return  state.logo.filter(logovisible => logovisible.settings.visible);
   },
 
-   
     },
 
   
