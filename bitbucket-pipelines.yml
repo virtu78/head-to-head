@@ -12,5 +12,5 @@ script:
   - cd dist
   - git add -A
   - git commit -m 'deploy build'
-  - git push -f ${BITBUCKET_GIT_HTTP_ORIGIN} master
+  - git push -f ${BITBUCKET_GIT_SSH_ORIGIN} master
   - cd -
