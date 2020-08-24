@@ -1,0 +1,16 @@
+image: node:12.13.1
+
+pipelines:
+  default:
+    - step:
+caches:
+  - node
+script: 
+  - npm install
+  - npm rebuild node-sass
+  - npm run build
+  - cd dist
+  - git add -A
+  - git commit -m 'deploy build'
+  - git push -f ${BITBUCKET_GIT_HTTP_ORIGIN} master
+  - cd -
